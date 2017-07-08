@@ -23,5 +23,21 @@
   "bugs": {
     "url": "https://github.com/nodeswork/utils/issues"
   },
-  "homepage": "https://github.com/nodeswork/utils#readme"
+  "homepage": "https://github.com/nodeswork/utils#readme",
+  "devDependencies": {
+    "@types/node": "^8.0.8",
+    "chai": "^4.0.2",
+    "coffeescript": "^2.0.0-beta3",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.1.7",
+    "mocha": "^3.4.2",
+    "should": "^11.2.1",
+    "typescript": "^2.4.1"
+  },
+  "dependencies": {
+    "@types/underscore": "^1.8.1",
+    "@types/validator": "^6.2.0",
+    "underscore": "^1.8.3",
+    "validator": "^8.0.0"
+  }
 }
