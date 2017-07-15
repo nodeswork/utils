@@ -1,7 +1,4 @@
-/// <reference path='function-name.d.ts' />
-
 import * as _ from 'underscore'
-
 
 interface ErrorCaster {
   filter(error: any, options: ErrorOptions): boolean
@@ -35,7 +32,7 @@ class NodesworkError extends Error {
   toJSON(include: {cause?: boolean, stack?: boolean} = {}): object {
     let constructor: any = <any>this.constructor;
     let ret: any = {
-      name:     this.constructor.name,
+      name:     (this.constructor as any).name,
       message:  this.message,
       meta:     _.extend({}, constructor.meta, this.meta),
     };

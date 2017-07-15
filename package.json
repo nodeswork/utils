@@ -1,8 +1,9 @@
 {
   "name": "@nodeswork/utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Utilities used across nodeswork repos.",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "./node_modules/.bin/gulp",
     "prepublish": "npm run build",
