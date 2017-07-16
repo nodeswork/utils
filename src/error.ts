@@ -1,29 +1,39 @@
 import * as _ from 'underscore'
 
-interface ErrorCaster {
+
+export interface ErrorCaster {
   filter(error: any, options: ErrorOptions): boolean
   cast(error: any, options: ErrorOptions, cls: NodesworkErrorClass): NodesworkError
 }
 
-interface ErrorOptions {
+
+export interface ErrorOptions {
   message?: string
-  meta?: object
+  meta?:    Meta
 }
 
-interface NodesworkErrorClass {
+
+export interface NodesworkErrorClass {
   new(message: string, meta: object, cause: Error): NodesworkError
+}
+
+
+export interface Meta {
+  responseCode?:  number
+  path?:          string
+  [key: string]:  any
 }
 
 
 /**
  * Basic NodesworkError class which wrap from Error class.
  */
-class NodesworkError extends Error {
+export class NodesworkError extends Error {
 
-  meta:   object;
+  meta:   Meta;
   cause:  Error;
 
-  constructor(message: string, meta: object = {}, cause: Error = null) {
+  constructor(message: string, meta: Meta = {}, cause: Error = null) {
     super(message);
     this.meta   = meta;
     this.cause  = cause;
@@ -68,7 +78,7 @@ class NodesworkError extends Error {
 }
 
 
-let passthroughCaster: ErrorCaster = {
+export let passthroughCaster: ErrorCaster = {
 
   filter: (error: any, options: ErrorOptions) => {
     return error instanceof NodesworkError
@@ -87,12 +97,3 @@ let passthroughCaster: ErrorCaster = {
 
 
 NodesworkError.addErrorCaster(passthroughCaster);
-
-
-export {
-  ErrorCaster,
-  ErrorOptions,
-  NodesworkError,
-  NodesworkErrorClass,
-  passthroughCaster,
-}
