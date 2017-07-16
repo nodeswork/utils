@@ -1,7 +1,4 @@
 {
-  "files": [
-    "src/*"
-  ],
   "compilerOptions": {
     "module": "commonjs",
     "lib": [

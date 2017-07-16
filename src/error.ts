@@ -96,4 +96,8 @@ export let passthroughCaster: ErrorCaster = {
 };
 
 
+export class ValidationError extends NodesworkError {
+}
+
+
 NodesworkError.addErrorCaster(passthroughCaster);

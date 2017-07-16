@@ -1,7 +1,11 @@
 import * as validator from './validator'
+import * as handler from './handler'
 
 export * from './error'
-export { validator }
+export {
+  handler,
+  validator
+}
 
 
 export function NAMED(name: string, fn: Function): Function {
