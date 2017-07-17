@@ -4,7 +4,7 @@ should                        = require 'should'
 
 describe 'validator', ->
 
-  describe 'isRequired', ->
+  describe '#isRequired', ->
 
     it 'should throw error for null', ->
 
