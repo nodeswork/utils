@@ -17,12 +17,12 @@ const ERR_OPT_INVALID_VALUE           = {
 
 
 export interface IValidateFunc {
-  (value: any): void
+  (value: any): any
 }
 
 
 interface IBooleanValidateFunc {
-  (value: any): void
+  (value: any): boolean
 }
 
 
@@ -47,6 +47,8 @@ function wrapper(
         _.extend({ responseCode: 422 }, options.meta)
       )
     }
+
+    return value;
   });
 }
 
@@ -88,6 +90,13 @@ export function notEquals(
 }
 
 
+export function setDefault(defaultValue: any): IValidateFunc {
+  return function setDefault(value): any {
+    return value == null ? defaultValue : value;
+  };
+}
+
+
 interface CompiledRule {
   validators: IValidateFunc[],
   subFields: {
@@ -96,23 +105,42 @@ interface CompiledRule {
 }
 
 
+function validateObject(rule: CompiledRule, value: any): any {
+  let ret: any = {};
+
+  for (let field in rule.subFields) {
+    try {
+      ret[field] = rule.subFields[field](value[field]);
+    } catch (e) {
+      if (e instanceof ValidationError) {
+        e.meta.path = (
+          e.meta.path ? field + "." + e.meta.path : field
+        );
+      }
+      throw e;
+    }
+  }
+
+  return ret;
+}
+
+
 function valideFromCompiledRule(rule: CompiledRule): IValidateFunc {
   return NAMED('nestedValidate', (value: any) => {
     for (let validator of rule.validators) {
-      validator(value);
+      value = validator(value);
     }
-    if (value == null) { return; }
-    for (let field in rule.subFields) {
-      try {
-        rule.subFields[field](value[field]);
-      } catch (e) {
-        if (e instanceof ValidationError) {
-          e.meta.path = (
-            e.meta.path ? field + "." + e.meta.path : field
-          );
-        }
-        throw e;
+
+    if (value == null || _.isEmpty(rule.subFields)) { return value; }
+
+    if (_.isArray(value)) {
+      let ret = [];
+      for (let v of value) {
+        ret.push(validateObject(rule, v));
       }
+      return ret;
+    } else {
+      return validateObject(rule, value);
     }
   });
 }

@@ -106,3 +106,19 @@ describe 'validator2', ->
             responseCode: 422
             path: 'foo.bar'
         }
+
+    it 'should return default value', ->
+
+      compiled = validator2.compile(
+        foo: validator2.setDefault('bar')
+      )
+      compiled({}).should.have.properties foo: 'bar'
+
+    it 'should return default value for array', ->
+
+      compiled = validator2.compile(
+        foo:
+          bar: validator2.setDefault('bar')
+      )
+      res = compiled(foo: [{}])
+      res.should.have.properties foo: [{bar: 'bar'}]
