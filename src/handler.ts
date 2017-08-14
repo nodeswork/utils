@@ -22,7 +22,15 @@ export function internalErrorHandler(
         stack: debug,
       })
       ctx.status = error.meta.responseCode || 500;
-      logger.error(e);
+
+      let meta: any = {
+        url: ctx.request.url,
+        method: ctx.request.method,
+        headers: ctx.request.headers,
+        error: error.toJSON({ cause: true, stack: true })
+      };
+
+      logger.error('Request Internal Error', meta);
     }
   }
 }

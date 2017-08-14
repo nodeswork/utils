@@ -50,6 +50,8 @@ export class NodesworkError extends Error {
     if (include.cause && this.cause != null) {
       if (this.cause instanceof NodesworkError) {
         ret.cause = (<NodesworkError>this.cause).toJSON(include);
+      } else if (include.stack && this.cause.stack) {
+        ret.cause = this.cause.stack;
       } else {
         ret.cause = this.cause.toString();
       }
