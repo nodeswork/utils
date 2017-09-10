@@ -8,8 +8,20 @@ Utilities used across nodeswork repos.
 
 ## Key Components
 
-1. Error
-2. Validator
-3. Validator2
-4. Handler
-5. Utility Functions
+Index | Component         | Description
+:-----|:------------------|:--------------------------------------------
+1     | Error             | Basic Error class
+2     | Validator         | Validate object fields
+3     | Validator2        | Validate object fields
+4     | Http Handler      | Utility functions for handling HTTP requests
+5     | Utility Functions | Some other basic utility functions
+
+## Error Class
+
+### constructor
+
+Param   | Required      | Type         | Description
+:-------|:--------------|:-------------|:-----------
+message | required      | string       |
+meta    | default: {}   | ErrorMeta    |
+cause   | default: null | Error or any | any
