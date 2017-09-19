@@ -71,7 +71,7 @@ export class NodesworkError extends Error {
         return caster.cast(error, options, this);
       }
     }
-    return new this('Unkown error', undefined, error);
+    return this.internalServerError(undefined, undefined, error);
   }
 
   static badRequest(
