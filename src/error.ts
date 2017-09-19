@@ -1,6 +1,5 @@
 import * as _ from 'underscore'
 
-
 export interface ErrorCaster {
   filter(error: any, options: ErrorOptions): boolean
   cast(error: any, options: ErrorOptions, cls: NodesworkErrorClass): NodesworkError
@@ -30,13 +29,10 @@ export interface Meta {
  */
 export class NodesworkError extends Error {
 
-  meta:   Meta;
-  cause:  Error;
-
-  constructor(message: string, meta: Meta = {}, cause: Error = null) {
+  constructor(
+    message: string, public meta: Meta = {}, public cause: Error = null
+  ) {
     super(message);
-    this.meta   = meta;
-    this.cause  = cause;
   }
 
   toJSON(include: {cause?: boolean, stack?: boolean} = {}): object {
@@ -76,6 +72,376 @@ export class NodesworkError extends Error {
       }
     }
     return new this('Unkown error', undefined, error);
+  }
+
+  static badRequest(
+    message: string = 'Bad Request',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 400}), cause,
+    );
+  }
+
+  static unauthorized(
+    message: string = 'Unauthorized',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 401}), cause,
+    );
+  }
+
+  static paymentRequired(
+    message: string = 'Payment Required',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 402}), cause,
+    );
+  }
+
+  static forbidden(
+    message: string = 'Forbidden',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 403}), cause,
+    );
+  }
+
+  static notFound(
+    message: string = 'Not Found',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 404}), cause,
+    );
+  }
+
+  static methodNotAllowed(
+    message: string = 'Method Not Allowed',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 405}), cause,
+    );
+  }
+
+  static notAcceptable(
+    message: string = 'Not Acceptable',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 406}), cause,
+    );
+  }
+
+  static proxyAuthenticationRequired(
+    message: string = 'Proxy Authentication Required',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 407}), cause,
+    );
+  }
+
+  static requestTimeout(
+    message: string = 'Request Timeout',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 408}), cause,
+    );
+  }
+
+  static conflict(
+    message: string = 'Conflict',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 409}), cause,
+    );
+  }
+
+  static gone(
+    message: string = 'Gone',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 410}), cause,
+    );
+  }
+
+  static lengthRequired(
+    message: string = 'Length Required',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 411}), cause,
+    );
+  }
+
+  static preconditionFailed(
+    message: string = 'Precondition Failed',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 412}), cause,
+    );
+  }
+
+  static payloadTooLarge(
+    message: string = 'Payload Too Large',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 413}), cause,
+    );
+  }
+
+  static uriTooLong(
+    message: string = 'Uri Too Long',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 414}), cause,
+    );
+  }
+
+  static unsupportedMediaType(
+    message: string = 'Unsupported Media Type',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 415}), cause,
+    );
+  }
+
+  static rangeNotSatisfiable(
+    message: string = 'Range Not Satisfiable',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 416}), cause,
+    );
+  }
+
+  static expectationFailed(
+    message: string = 'Expectation Failed',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 417}), cause,
+    );
+  }
+
+  static imATeapot(
+    message: string = 'I\'m A Teapot',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 418}), cause,
+    );
+  }
+
+  static unprocessableEntity(
+    message: string = 'Unprocessable Entity',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 422}), cause,
+    );
+  }
+
+  static locked(
+    message: string = 'Locked',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 423}), cause,
+    );
+  }
+
+  static failedDependency(
+    message: string = 'Failed Dependency',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 424}), cause,
+    );
+  }
+
+  static upgradeRequired(
+    message: string = 'Upgrade Required',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 426}), cause,
+    );
+  }
+
+  static preconditionRequired(
+    message: string = 'Precondition Required',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 428}), cause,
+    );
+  }
+
+  static tooManyRequests(
+    message: string = 'Too Many Requests',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 429}), cause,
+    );
+  }
+
+  static requestHeaderFieldsTooLarge(
+    message: string = 'Request Header Fields Too Large',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 431}), cause,
+    );
+  }
+
+  static internalServerError(
+    message: string = 'Internal Server Error',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 500}), cause,
+    );
+  }
+
+  static notImplemented(
+    message: string = 'Not Implemented',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 501}), cause,
+    );
+  }
+
+  static badGateway(
+    message: string = 'Bad Gateway',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 502}), cause,
+    );
+  }
+
+  static serviceUnavailable(
+    message: string = 'Service Unavailable',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 503}), cause,
+    );
+  }
+
+  static gatewayTimeout(
+    message: string = 'Gateway Time-out',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 504}), cause,
+    );
+  }
+
+  static httpVersionNotSupported(
+    message: string = 'Http Version Not Supported',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 505}), cause,
+    );
+  }
+
+  static variantAlsoNegotiates(
+    message: string = 'Variant Also Negotiates',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 506}), cause,
+    );
+  }
+
+  static insufficientStorage(
+    message: string = 'Insufficient Storage',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 507}), cause,
+    );
+  }
+
+  static loopDetected(
+    message: string = 'Loop Detected',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 508}), cause,
+    );
+  }
+
+  static notExtended(
+    message: string = 'Not Extended',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 510}), cause,
+    );
+  }
+
+  static networkAuthenticationRequired(
+    message: string = 'Network Authentication Required',
+    meta: Meta = {},
+    cause: Error = null,
+  ) {
+    return new NodesworkError(
+      message, _.extend(meta, {responseCode: 511}), cause,
+    );
   }
 }
 
