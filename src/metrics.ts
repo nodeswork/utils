@@ -1,6 +1,6 @@
 import * as _             from 'underscore';
 
-import { NodesworkError } from '../error';
+import { NodesworkError } from './error';
 
 export interface MetricsValue<V> {
   operand:    string;
