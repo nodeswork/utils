@@ -38,8 +38,10 @@
     "typescript": "^2.4.2"
   },
   "dependencies": {
+    "@types/object-hash": "^1.1.0",
     "@types/underscore": "^1.8.1",
     "@types/validator": "^6.2.0",
+    "object-hash": "^1.1.8",
     "underscore": "^1.8.3",
     "validator": "^8.0.0"
   }

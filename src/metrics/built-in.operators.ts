@@ -1,57 +1,6 @@
-import * as _             from 'underscore';
-
-import { NodesworkError } from './error';
-
-export interface MetricsValue<V> {
-  operand:    string;
-  value:      V;
-}
-
-export interface Operator<T> {
-  (val1: T, val2: T): T;
-}
-
-export class MetricsOperator {
-
-  private operators: { [name: string]: Operator<any>; } = {};
-
-  constructor() { }
-
-  public registerAggregator<T>(operand: string, oper: Operator<T>) {
-    this.operators[operand] = oper;
-  }
-
-  public operate<V>(values: MetricsValue<V>[]): MetricsValue<V> {
-    if (values == null || values.length === 0) {
-      return null;
-    }
-
-    let res = null;
-
-    for (const value of values) {
-      if (res == null) {
-        res = value;
-      } else {
-        const oper = this.operators[value.operand];
-        if (oper == null) {
-          throw NodesworkError.internalServerError(
-            `Unknown operator ${value.operand}`,
-          );
-        } else if (value.operand != res.operand) {
-          throw NodesworkError.internalServerError(
-            `Inconsistent operands ${value.operand} vs ${res.operand}`,
-          );
-        } else {
-          res = oper(res, value);
-        }
-      }
-    }
-
-    return res;
-  }
-}
-
-export const operator = new MetricsOperator();
+import * as _           from 'underscore';
+import { MetricsValue } from './def';
+import { operator }     from './operators';
 
 export const SUM = 'sum';
 
