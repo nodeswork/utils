@@ -52,7 +52,7 @@ export class MetricsOperator {
   }
 
   public updateMetricsData(
-    dimensions: MetricsDimensions,
+    dimensions: MetricsDimensions = {},
     name:       string,
     value:      MetricsValue<any>,
     target?:    MetricsData,
@@ -84,18 +84,38 @@ export class MetricsOperator {
   }
 
   public projectMetricsData(
-    data: MetricsData, metricsNames: string[],
+    data: MetricsData, metricsNames: string[] = [],
+    dimensionNames: string[] = [],
   ): MetricsData {
+    if (metricsNames.length === 0) {
+      metricsNames = Object.keys(data.metrics);
+    }
+
     const dhashes = _
       .chain(metricsNames)
       .map((name) => Object.keys(data.metrics[name]))
       .flatten()
       .value();
 
-    return {
-      dimensions:  _.pick(data.dimensions, dhashes),
-      metrics:     _.pick(data.metrics, metricsNames),
-    };
+    const diff = _.difference(dhashes, dimensionNames);
+
+    if (dimensionNames.length === 0 || diff.length === 0) {
+      return {
+        dimensions:  _.pick(data.dimensions, dhashes),
+        metrics:     _.pick(data.metrics, metricsNames),
+      };
+    }
+
+    const result: MetricsData = { dimensions: {}, metrics: {} };
+
+    for (const mName of metricsNames) {
+      _.each(data.metrics[mName], (metricsValue, dhash) => {
+        const newDimensions = _.pick(data.dimensions[dhash], dimensionNames);
+        this.updateMetricsData(newDimensions, mName, metricsValue, result);
+      });
+    }
+
+    return result;
   }
 
   public mergeMetricsData(
