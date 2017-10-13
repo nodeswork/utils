@@ -1,6 +1,6 @@
 {
   "name": "@nodeswork/utils",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Utilities used across nodeswork repos.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
