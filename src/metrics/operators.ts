@@ -26,24 +26,27 @@ export class MetricsOperator {
       return null;
     }
 
-    const filteredValues  = _.filter(values, (x) => x != null);
-    let res               = null;
+    const filteredValues     = _.filter(values, (x) => x != null);
+    let res: MetricsValue<V> = null;
 
     for (const value of filteredValues) {
       if (res == null) {
         res = value;
       } else {
-        const oper = this.operators[value.operand];
+        const oper = this.operators[value.oper];
         if (oper == null) {
           throw NodesworkError.internalServerError(
-            `Unknown operator ${value.operand}`,
+            `Unknown operator ${value.oper}`,
           );
-        } else if (value.operand != res.operand) {
+        } else if (value.oper != res.oper) {
           throw NodesworkError.internalServerError(
-            `Inconsistent operands ${value.operand} vs ${res.operand}`,
+            `Inconsistent operands ${value.oper} vs ${res.oper}`,
           );
         } else {
-          res = oper(res, value);
+          res = {
+            oper:  res.oper,
+            val:   oper(res.val, value.val),
+          };
         }
       }
     }
@@ -84,9 +87,11 @@ export class MetricsOperator {
   }
 
   public projectMetricsData(
-    data: MetricsData, metricsNames: string[] = [],
-    dimensionNames: string[] = [],
+    data: MetricsData, options: MetricsProjectOptions,
   ): MetricsData {
+    let metricsNames      = options.metrics || [];
+    const dimensionNames  = options.dimensions || [];
+
     if (metricsNames.length === 0) {
       metricsNames = Object.keys(data.metrics);
     }
@@ -127,7 +132,7 @@ export class MetricsOperator {
     return this.mergeMetricsDataInternal(flattenData, 0, flattenData.length);
   }
 
-  public mergeMetricsDataInternal(
+  private mergeMetricsDataInternal(
     data: MetricsData[], low: number, high: number,
   ): MetricsData {
     if (low >= high) {
@@ -138,9 +143,9 @@ export class MetricsOperator {
       return data[low];
     }
 
-    const mid    = (low + high) / 2;
+    const mid    = Math.floor((low + high) / 2);
     const left   = this.mergeMetricsDataInternal(data, low, mid);
-    const right  = this.mergeMetricsDataInternal(data, mid + 1, high);
+    const right  = this.mergeMetricsDataInternal(data, mid, high);
 
     const metricsNames = _.union(
       Object.keys(left.metrics), Object.keys(right.metrics),
@@ -167,6 +172,11 @@ export class MetricsOperator {
       metrics,
     };
   }
+}
+
+export interface MetricsProjectOptions {
+  metrics?:     string[];
+  dimensions?:  string[];
 }
 
 export const operator = new MetricsOperator();

@@ -5,7 +5,7 @@ import { operator }     from './operators';
 export const SUM = 'sum';
 
 export function Sum(val: number): MetricsValue<number> {
-  return { operand: SUM, value: val };
+  return { oper: SUM, val, };
 }
 
 operator.registerAggregator(SUM, (v1: number, v2: number) => v1 + v2);
@@ -13,7 +13,7 @@ operator.registerAggregator(SUM, (v1: number, v2: number) => v1 + v2);
 export const COUNT = 'count';
 
 export function Count(val: number): MetricsValue<number> {
-  return { operand: COUNT, value: val };
+  return { oper: COUNT, val, };
 }
 
 operator.registerAggregator(COUNT, (v1: number, v2: number) => v1 + v2);
@@ -23,7 +23,7 @@ export const AVERAGE = 'avg';
 export function Average(
   val: any, weight: number = 1,
 ): MetricsValue<AverageValue> {
-  return { operand: AVERAGE, value: { v: val, w: weight }};
+  return { oper: AVERAGE, val: { v: val, w: weight }};
 }
 
 export interface AverageValue {
@@ -44,7 +44,7 @@ operator.registerAggregator(
 export const MAX = 'max';
 
 export function Max(val: number): MetricsValue<number> {
-  return { operand: MAX, value: val };
+  return { oper: MAX, val, };
 }
 
 operator.registerAggregator(
@@ -55,7 +55,7 @@ operator.registerAggregator(
 export const MIN = 'min';
 
 export function Min(val: number): MetricsValue<number> {
-  return { operand: MIN, value: val };
+  return { oper: MIN, val, };
 }
 
 operator.registerAggregator(
@@ -66,7 +66,7 @@ operator.registerAggregator(
 export const LAST = 'last';
 
 export function Last(val: any): MetricsValue<any> {
-  return { operand: LAST, value: val };
+  return { oper: LAST, val, };
 }
 
 operator.registerAggregator(LAST, (v1: any, v2: any) => v2);
@@ -74,7 +74,7 @@ operator.registerAggregator(LAST, (v1: any, v2: any) => v2);
 export const FIRST = 'first';
 
 export function First(val: any): MetricsValue<any> {
-  return { operand: FIRST, value: val };
+  return { oper: FIRST, val, };
 }
 
 operator.registerAggregator(FIRST, (v1: any, v2: any) => v1);
@@ -82,7 +82,7 @@ operator.registerAggregator(FIRST, (v1: any, v2: any) => v1);
 export const COLLECT = 'collect';
 
 export function Collect(val: any): MetricsValue<any[]> {
-  return { operand: COLLECT, value: [val] };
+  return { oper: COLLECT, val: [val] };
 }
 
 operator.registerAggregator(COLLECT, (v1: any[], v2: any[]) => v1.concat(v2));
@@ -90,7 +90,7 @@ operator.registerAggregator(COLLECT, (v1: any[], v2: any[]) => v1.concat(v2));
 export const UNION = 'union';
 
 export function Union(val: any): MetricsValue<any[]> {
-  return { operand: UNION, value: [val] };
+  return { oper: UNION, val: [val] };
 }
 
 operator.registerAggregator(UNION, (v1: any[], v2: any[]) => _.union(v1, v2));

@@ -1,6 +1,6 @@
 export interface MetricsValue<V> {
-  operand:    string;
-  value:      V;
+  oper:    string;
+  val:      V;
 }
 
 export interface Operator<T> {
