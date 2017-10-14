@@ -98,7 +98,7 @@ export class MetricsOperator {
 
     const dhashes = _
       .chain(metricsNames)
-      .map((name) => Object.keys(data.metrics[name]))
+      .map((name) => Object.keys(data.metrics[name] || {}))
       .flatten()
       .value();
 
