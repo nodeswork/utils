@@ -54,33 +54,44 @@ export class MetricsOperator {
     return res;
   }
 
-  public updateMetricsData(
-    dimensions: MetricsDimensions = {},
-    name:       string,
-    value:      MetricsValue<any>,
+  public updateMetricsData<T>(
+    options:    UpdateMetricsDataOptions<T>,
     target?:    MetricsData,
   ): MetricsData {
-    const dhash = hashDimensions(dimensions);
+    const dimensions  = options.dimensions || {};
+    const dhash       = hashDimensions(dimensions);
 
     if (target == null) {
+      const ts = options.ts || Date.now(),
       target = {
+        timerange:   {
+            start:   ts,
+          end:       ts,
+        },
         dimensions:  { },
         metrics:     { },
-      } as MetricsData;
+      };
     }
 
     target.dimensions[dhash] = dimensions;
 
-    if (target.metrics[name] == null) {
-      target.metrics[name] = {};
+    if (target.metrics[options.name] == null) {
+      target.metrics[options.name] = {};
     }
 
-    const targetMetrics = target.metrics[name];
+    const targetMetrics = target.metrics[options.name];
 
     if (targetMetrics[dhash] == null) {
-      targetMetrics[dhash] = value;
+      targetMetrics[dhash] = options.value;
     } else {
-      targetMetrics[dhash] = this.operate([targetMetrics[dhash], value]);
+      targetMetrics[dhash] = this.operate(
+        [targetMetrics[dhash], options.value],
+      );
+    }
+
+    if (options.ts) {
+      target.timerange.start  = Math.min(target.timerange.start, options.ts);
+      target.timerange.end    = Math.max(target.timerange.end, options.ts);
     }
 
     return target;
@@ -106,20 +117,61 @@ export class MetricsOperator {
 
     if (dimensionNames.length === 0 || diff.length === 0) {
       return {
+        timerange:   data.timerange,
         dimensions:  _.pick(data.dimensions, dhashes),
         metrics:     _.pick(data.metrics, metricsNames),
       };
     }
 
-    const result: MetricsData = { dimensions: {}, metrics: {} };
+    const result:  MetricsData = {
+      timerange:   data.timerange,
+      dimensions:  {},
+      metrics:     {},
+    };
 
     for (const mName of metricsNames) {
       _.each(data.metrics[mName], (metricsValue, dhash) => {
         const newDimensions = _.pick(data.dimensions[dhash], dimensionNames);
-        this.updateMetricsData(newDimensions, mName, metricsValue, result);
+        this.updateMetricsData({
+          dimensions:  newDimensions,
+          name:        mName,
+          value:       metricsValue,
+        }, result);
       });
     }
 
+    return result;
+  }
+
+  public mergeMetricsDataByTimeGranularity(
+    datas: MetricsData[],
+    granularityInSecond: number,
+  ): MetricsData[] {
+    const granularity = granularityInSecond * 1000;
+
+    const func = (data: MetricsData) => {
+      return (data.timerange.start / granularity).toString();
+    };
+    const result = this.mergeMetricsDataBy(datas, func);
+    for (const data of result) {
+      data.timerange.start  = Math.floor(
+        data.timerange.start / granularity
+      ) * granularity;
+      data.timerange.end    = Math.floor(
+        data.timerange.start / granularity
+      ) * granularity + granularity;
+    }
+    return result;
+  }
+
+  public mergeMetricsDataBy(
+    datas: MetricsData[],
+    func: (data: MetricsData) => string,
+  ): MetricsData[] {
+    const grouped = _.groupBy(datas, func);
+    const result  = _.map(grouped, (datas) => {
+      return this.mergeMetricsData(datas);
+    });
     return result;
   }
 
@@ -168,10 +220,21 @@ export class MetricsOperator {
     }
 
     return {
+      timerange:  {
+        start:    Math.min(left.timerange.start, right.timerange.start),
+        end:      Math.max(left.timerange.end, right.timerange.end),
+      },
       dimensions: _.extend({}, left.dimensions, right.dimensions),
       metrics,
     };
   }
+}
+
+export interface UpdateMetricsDataOptions<T> {
+  dimensions?:  MetricsDimensions,
+  name:         string;
+  value:        MetricsValue<T>;
+  ts?:          number;
 }
 
 export interface MetricsProjectOptions {

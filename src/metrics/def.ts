@@ -24,6 +24,10 @@ export interface Dimensions {
 }
 
 export interface MetricsData {
+  timerange:  {
+    start:    number;
+    end:      number;
+  };
   dimensions: Dimensions;
   metrics:    Metrics;
 }
