@@ -150,7 +150,7 @@ export class MetricsOperator {
     const granularity = granularityInSecond * 1000;
 
     const func = (data: MetricsData) => {
-      return (data.timerange.start / granularity).toString();
+      return Math.floor(data.timerange.start / granularity).toString();
     };
     const result = this.mergeMetricsDataBy(datas, func);
     for (const data of result) {
