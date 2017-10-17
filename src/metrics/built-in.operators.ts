@@ -35,7 +35,7 @@ operator.registerAggregator(
   AVERAGE,
   (v1: AverageValue, v2: AverageValue) => {
     return {
-      v: v1.v * v1.w + v2.v * v2.w,
+      v: (v1.v * v1.w + v2.v * v2.w) / (v1.w + v2.w),
       w: v1.w + v2.w,
     };
   },
