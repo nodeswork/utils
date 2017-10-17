@@ -39,7 +39,7 @@ export class MetricsOperator {
   public retrieveValue(
     value: MetricsValue<any>, method: string = 'default',
   ): number {
-    return this.valueRetrievers[value.oper][method](value.val);
+    return this.valueRetrievers[value.oper][method](value);
   }
 
   public operate<V>(values: MetricsValue<V>[]): MetricsValue<V> {
