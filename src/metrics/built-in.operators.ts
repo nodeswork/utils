@@ -40,8 +40,8 @@ operator.registerAggregator(
     };
   },
   {
-    default: (v: MetricsValue<AverageValue>) => v.val.v / v.val.w,
-    numerator: (v: MetricsValue<AverageValue>) => v.val.v,
+    default: (v: MetricsValue<AverageValue>) => v.val.v,
+    numerator: (v: MetricsValue<AverageValue>) => v.val.v * v.val.w,
     denominator: (v: MetricsValue<AverageValue>) => v.val.w,
   },
 );
