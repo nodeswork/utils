@@ -172,7 +172,9 @@ export class MetricsOperator {
     const result  = _.map(grouped, (datas) => {
       return this.mergeMetricsData(datas);
     });
-    return result;
+    return _.filter(
+      result, (x) => x.metrics && Object.keys(x.metrics).length > 0,
+    );
   }
 
   public mergeMetricsData(
