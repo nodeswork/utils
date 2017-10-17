@@ -11,14 +11,35 @@ import {
 }                         from './def';
 import { hashDimensions } from './utils';
 
+const DEFAULT_VALUE_RETRIVER = {
+  default: (val: MetricsValue<any>) => val.val,
+};
+
 export class MetricsOperator {
 
   private operators: { [name: string]: Operator<any>; } = {};
+  private valueRetrievers: {
+    [name: string]: {
+      [method: string]: (val: MetricsValue<any>) => number;
+    };
+  } = {};
 
   constructor() { }
 
-  public registerAggregator<T>(operand: string, oper: Operator<T>) {
-    this.operators[operand] = oper;
+  public registerAggregator<T>(
+    operand: string, oper: Operator<T>,
+    retrievers: {
+      [method: string]: (val: MetricsValue<any>) => number;
+    } = DEFAULT_VALUE_RETRIVER,
+  ) {
+    this.operators[operand]        = oper;
+    this.valueRetrievers[operand]  = retrievers;
+  }
+
+  public retrieveValue(
+    value: MetricsValue<any>, method: string = 'default',
+  ): number {
+    return this.valueRetrievers[value.oper][method](value.val);
   }
 
   public operate<V>(values: MetricsValue<V>[]): MetricsValue<V> {

@@ -12,7 +12,7 @@ operator.registerAggregator(SUM, (v1: number, v2: number) => v1 + v2);
 
 export const COUNT = 'count';
 
-export function Count(val: number): MetricsValue<number> {
+export function Count(val: number = 1): MetricsValue<number> {
   return { oper: COUNT, val, };
 }
 
@@ -38,6 +38,11 @@ operator.registerAggregator(
       v: v1.v * v1.w + v2.v * v2.w,
       w: v1.w + v2.w,
     };
+  },
+  {
+    default: (v: MetricsValue<AverageValue>) => v.val.v / v.val.w,
+    numerator: (v: MetricsValue<AverageValue>) => v.val.v,
+    denominator: (v: MetricsValue<AverageValue>) => v.val.w,
   },
 );
 
@@ -85,7 +90,12 @@ export function Collect(val: any): MetricsValue<any[]> {
   return { oper: COLLECT, val: [val] };
 }
 
-operator.registerAggregator(COLLECT, (v1: any[], v2: any[]) => v1.concat(v2));
+operator.registerAggregator(
+  COLLECT, (v1: any[], v2: any[]) => v1.concat(v2),
+  {
+    default: (v: MetricsValue<any[]>) => v.val.length,
+  },
+);
 
 export const UNION = 'union';
 
@@ -93,4 +103,9 @@ export function Union(val: any): MetricsValue<any[]> {
   return { oper: UNION, val: [val] };
 }
 
-operator.registerAggregator(UNION, (v1: any[], v2: any[]) => _.union(v1, v2));
+operator.registerAggregator(
+  UNION, (v1: any[], v2: any[]) => _.union(v1, v2),
+  {
+    default: (v: MetricsValue<any[]>) => v.val.length,
+  },
+);
