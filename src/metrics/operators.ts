@@ -232,6 +232,14 @@ export class MetricsOperator {
   }
 }
 
+export function dimensions(...args: any[]): MetricsDimensions {
+  const result: MetricsDimensions = {};
+  for (let idx = 0; idx < args.length; idx += 2) {
+    result[args[idx]] = args[idx + 1];
+  }
+  return result;
+}
+
 export interface UpdateMetricsDataOptions<T> {
   dimensions?:  MetricsDimensions,
   name:         string;
