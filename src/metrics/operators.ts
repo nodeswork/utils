@@ -3,9 +3,11 @@ import * as _             from 'underscore';
 import { NodesworkError } from '../error';
 
 import {
+  Dimensions,
   Metrics,
   MetricsData,
   MetricsDimensions,
+  MetricsSet,
   MetricsValue,
   Operator,
 }                         from './def';
@@ -164,6 +166,54 @@ export class MetricsOperator {
     return result;
   }
 
+  public filterMetricsDatasByValue(
+    data: MetricsData[], filter: MetricsDataValueFilter,
+  ): MetricsData[] {
+    return this.filterMetricsDatas(data, (dimensions, name, value) => {
+      if (filter.metrics.indexOf(name) === -1) {
+        return false;
+      }
+      for (const dFilter of filter.dimensions) {
+        if (dFilter.selectValues.length > 0 &&
+          dFilter.selectValues.indexOf(dimensions[dFilter.name]) === -1) {
+          return false;
+        }
+        if (dFilter.omitValues.length > 0 &&
+          dFilter.omitValues.indexOf(dimensions[dFilter.name]) >= 0) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  public filterMetricsDatas(
+    data: MetricsData[], filter: MetricsDataFilter,
+  ): MetricsData[] {
+    return _.filter(data, (d) => {
+      d = this.filterMetricsData(d, filter);
+      return _.any(d.metrics, (m) => Object.keys(m).length > 0);
+    });
+  }
+
+  public filterMetricsData(
+    data: MetricsData, filter: MetricsDataFilter,
+  ): MetricsData {
+    const dimensions: Dimensions = {};
+    const metrics = _.mapObject(data.metrics, (metrics, name) => {
+      const result: MetricsSet = {};
+      _.each(metrics, (value, dhash) => {
+        const d = data.dimensions[dhash];
+        if (filter(d, name, value, data)) {
+          result[dhash]      = value;
+          dimensions[dhash]  = d;
+        }
+      });
+      return result;
+    });
+    return _.extend({}, data, { dimensions, metrics });
+  }
+
   public mergeMetricsDataByTimeGranularity(
     datas: MetricsData[],
     granularityInSecond: number,
@@ -271,6 +321,21 @@ export interface UpdateMetricsDataOptions<T> {
 export interface MetricsProjectOptions {
   metrics?:     string[];
   dimensions?:  string[];
+}
+
+export interface MetricsDataFilter {
+  (dimension: MetricsDimensions,
+    name: string, value: MetricsValue<any>,
+    data?: MetricsData): boolean;
+}
+
+export interface MetricsDataValueFilter {
+  dimensions:      Array<{
+    name:          string;
+    selectValues:  any[];
+    omitValues:    any[];
+  }>;
+  metrics:         string[];
 }
 
 export const operator = new MetricsOperator();
