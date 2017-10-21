@@ -187,12 +187,39 @@ export class MetricsOperator {
     });
   }
 
+  public getDimensions(
+    data: MetricsData, strict: boolean = false,
+  ): MetricsDimensions[] {
+    if (!strict) {
+      return Object.values(data.dimensions);
+    } else {
+      const metrics = this.getMetricsNames(data);
+      return _.chain(metrics)
+        .map((name) => Object.keys(data.metrics[name]))
+        .flatten()
+        .uniq()
+        .map((dhash) => data.dimensions[dhash])
+        .value();
+    }
+  }
+
+  public getMetricsNames(data: MetricsData, strict: boolean = false): string[] {
+    if (!strict) {
+      return Object.keys(data.metrics);
+    } else {
+      return _.filter(
+        Object.keys(data.metrics),
+        (n) => Object.keys(data.metrics[n]).length > 0,
+      );
+    }
+  }
+
   public filterMetricsDatas(
     data: MetricsData[], filter: MetricsDataFilter,
   ): MetricsData[] {
     return _.filter(data, (d) => {
       d = this.filterMetricsData(d, filter);
-      return _.any(d.metrics, (m) => Object.keys(m).length > 0);
+      return this.getMetricsNames(d, true).length > 0;
     });
   }
 
