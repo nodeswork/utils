@@ -170,7 +170,7 @@ export class MetricsOperator {
     data: MetricsData[], filter: MetricsDataValueFilter,
   ): MetricsData[] {
     return this.filterMetricsDatas(data, (dimensions, name, value) => {
-      if (filter.metrics.indexOf(name) === -1) {
+      if (filter.metrics.length > 0 && filter.metrics.indexOf(name) === -1) {
         return false;
       }
       for (const dFilter of filter.dimensions) {
@@ -234,10 +234,10 @@ export class MetricsOperator {
   public filterMetricsDatas(
     data: MetricsData[], filter: MetricsDataFilter,
   ): MetricsData[] {
-    return _.filter(data, (d) => {
-      d = this.filterMetricsData(d, filter);
-      return this.getMetricsNames(d, true).length > 0;
-    });
+    return _.chain(data)
+      .map((d) => this.filterMetricsData(d, filter))
+      .filter((d) => this.getMetricsNames(d, true).length > 0)
+      .value();
   }
 
   public filterMetricsData(
