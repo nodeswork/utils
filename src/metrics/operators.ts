@@ -203,6 +203,23 @@ export class MetricsOperator {
     }
   }
 
+  public getDimensionValues(
+    data: MetricsData | MetricsData[], name: string,
+  ): any[] {
+    if (_.isArray(data)) {
+      return _.chain(data)
+        .map((d) => this.getDimensionValues(d, name))
+        .flatten()
+        .uniq()
+        .value();
+    } else {
+      return _.chain(data.dimensions)
+        .map((dimensions) => dimensions[name])
+        .uniq()
+        .value();
+    }
+  }
+
   public getMetricsNames(data: MetricsData, strict: boolean = false): string[] {
     if (!strict) {
       return Object.keys(data.metrics);
