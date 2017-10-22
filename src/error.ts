@@ -445,8 +445,7 @@ export class NodesworkError extends Error {
   }
 }
 
-
-export let passthroughCaster: ErrorCaster = {
+export let PASSTHROUGH_CASTER: ErrorCaster = {
 
   filter: (error: any, options: ErrorOptions) => {
     return error instanceof NodesworkError
@@ -463,9 +462,20 @@ export let passthroughCaster: ErrorCaster = {
   },
 };
 
+export const HTTP_RESPONSE_CASTER: ErrorCaster = {
+  filter: (error: any, options: ErrorOptions) => {
+    return error.name === 'StatusCodeError' && error.error &&
+      error.error.name === 'NodesworkError';
+  },
+
+  cast: (
+    error: any, options: ErrorOptions, cls: NodesworkErrorClass,
+  ) => {
+    return new NodesworkError(error.error.message, error.error.meta);
+  },
+};
 
 export class ValidationError extends NodesworkError {
 }
 
-
-NodesworkError.addErrorCaster(passthroughCaster);
+NodesworkError.addErrorCaster(PASSTHROUGH_CASTER);
