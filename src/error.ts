@@ -475,7 +475,21 @@ export const HTTP_RESPONSE_CASTER: ErrorCaster = {
   },
 };
 
+export const JSON_CASTER: ErrorCaster = {
+  filter: (error: any, options: ErrorOptions) => {
+    return error && error.name === 'NodesworkError' &&
+      !(error instanceof NodesworkError);
+  },
+
+  cast: (
+    error: any, options: ErrorOptions, cls: NodesworkErrorClass,
+  ) => {
+    return new NodesworkError(error.message, error.meta, error.cause);
+  },
+};
+
 export class ValidationError extends NodesworkError {
 }
 
 NodesworkError.addErrorCaster(PASSTHROUGH_CASTER);
+NodesworkError.addErrorCaster(JSON_CASTER);
