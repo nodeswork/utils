@@ -65,8 +65,9 @@ export class NodesworkError extends Error {
     this.errorCasters.push(caster);
   }
 
-  static cast(error: any, options: ErrorOptions = {}): NodesworkError {
-    for (let caster of this.errorCasters) {
+  static cast(error: any, options: ErrorOptions = {}, casters: ErrorCaster[]): NodesworkError {
+    const allCasters = casters == null ? this.errorCasters : this.errorCasters.concat(casters);
+    for (let caster of allCasters) {
       if (caster.filter(error, options)) {
         return caster.cast(error, options, this);
       }
@@ -459,6 +460,21 @@ export let PASSTHROUGH_CASTER: ErrorCaster = {
       return castError;
     }
     return <NodesworkError>error;
+  },
+};
+
+export const HTTP_DEPENDENCY_CASTER: ErrorCaster = {
+  filter: (error: any, options: ErrorOptions) => {
+    return error.name === 'StatusCodeError';
+  },
+
+  cast: (
+    error: any, options: ErrorOptions, cls: NodesworkErrorClass,
+  ) => {
+    return NodesworkError.failedDependency(options.message, _.extend({
+      statusCode: error.statusCode,
+      message: error.message,
+    }, options.meta));
   },
 };
 
